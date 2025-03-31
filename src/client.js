@@ -99,30 +99,31 @@ client.on('interactionCreate', interaction => {
 })
 
 client.on('ready', async (interaction) => {
-    const activities = [{
-        name: `📄 | Verificando allowlists ∞`,
-        type: ActivityType.Listening
-    },
-    {
-        name: `❤️ | ${client.guilds.cache.get(config.idservidor.id).name}`,
-        type: ActivityType.Playing
-    },
-    {
-        name: `⚙️ VERSÃO [ 2.0.1 ]`,
-        type: ActivityType.Playing
-    },
-    {
-        name: `DÚVIDAS? ABRA UM TICKET`,
-        type: ActivityType.Playing
-    },
-    {
-        name: `Assistindo ${client.users.cache.size} pessoas 👀`,
-        type: ActivityType.Watching
-    },
-    {
-        name: `❤️ | By Junnin`,
-        type: ActivityType.Watching
-    },
+    const activities = [
+        {
+            name: `📄 | Verificando allowlists ∞`,
+            type: ActivityType.Listening
+        },
+        {
+            name: `❤️ | ${client.guilds.cache.get(config.idservidor.id).name}`,
+            type: ActivityType.Playing
+        },
+        //{
+        //    name: `⚙️ VERSÃO [ 2.0.1 ]`,
+        //    type: ActivityType.Playing
+        //},
+        {
+            name: `DÚVIDAS? ABRA UM TICKET`,
+            type: ActivityType.Playing
+        },
+        {
+            name: `${client.users.cache.size} pessoas 👀`,
+            type: ActivityType.Watching
+        },
+        //{
+        //    name: `❤️ | By Junnin`,
+        //    type: ActivityType.Watching
+        //},
     ];
     const status = [
         'dnd'
@@ -137,24 +138,25 @@ client.on('ready', async (interaction) => {
     let s = 0;
 
     setInterval(() => {
-        if (s >= activities.length) s = 0
+        if (s >= status.length) s = 0
         client.user.setStatus(status[s])
         s++;
     }, 20000);
 })
 
 client.on('ready', async () => {
-
-    setInterval(() => {
-        const channel = client.channels.cache.find(c => c.id === config.automatico.automessage)
-        channel.send({
-            embeds: [
-                new EmbedBuilder()
-                    .setDescription('🔔 Leia nossas <#1035799143144235049> para garantir o envio de uma boa **ALLOWLIST.**')
-                    .setColor("#2f3136")
-            ]
-        })
-    }, 60 * 60000)
+    if (config.automatico.automessage && config.automatico.automessage != "") {
+        setInterval(() => {
+            const channel = client.channels.cache.find(c => c.id === config.automatico.automessage)
+            channel.send({
+                embeds: [
+                    new EmbedBuilder()
+                        .setDescription('🔔 Leia nossas <#1035799143144235049> para garantir o envio de uma boa **ALLOWLIST.**')
+                        .setColor("#2f3136")
+                ]
+            })
+        }, 60 * 60000)
+    }
 
     client.application.commands.set([
         {

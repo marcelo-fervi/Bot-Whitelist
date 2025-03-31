@@ -6,6 +6,10 @@ import { EmbedBuilder } from '@discordjs/builders'
 const bot_table = config.ticket.table
 
 client.on('guildMemberAdd', async (member) => {
+    if (!config.channels.welcome_channel || config.channels.welcome_channel == "") {
+        return;
+    }
+
     const welcome_channel = await client.channels.fetch(config.channels.welcome_channel).catch(() => {})
     if (welcome_channel) {
         welcome_channel.send({
@@ -16,6 +20,10 @@ client.on('guildMemberAdd', async (member) => {
 })
 
 client.on('guildMemberRemove', async (member) => {
+    if (!config.channels.exit_channel || config.channels.exit_channel == "") {
+        return;
+    }
+    
     const guild = member.guild
     const table = config.liberation.table
     const column = config.liberation.column
@@ -87,7 +95,7 @@ client.on('messageCreate', async (message) => {
                     embeds: [
                         new EmbedBuilder()
                         .setColor(0x00FF00)
-                        .setDescription(`**<@${message.author.id}> Passaport Liberado, Seja Bem-Vindo(a) a Cidade**`)
+                        .setDescription(`**<@${message.author.id}> Passaporte Liberado, Seja Bem-Vindo(a) a Cidade**`)
                     ]
 
                 }).then(msg => {

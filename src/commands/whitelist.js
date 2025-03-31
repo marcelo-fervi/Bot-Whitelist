@@ -3,6 +3,7 @@ import mysql from '../mysql.js'
 import config from '../config.js'
 import messages from '../messages.js'
 const bot_table = config.ticket.table
+const whitelist_table = config.liberation.table
 import client, {
     buttons,
     commands,
@@ -92,8 +93,9 @@ async function createWhitelist(category, member) {
     channel.send(messages.whitelist.initWhitelist(client, member))
 
     usersCache[member.id] = {
-        firstTimeout: createFirstTimeout(channel, member)
+        firstTimeout: createFirstTimeout(channel, member, 2 * 60000)
     }
+        
     return channel
 }
 
@@ -113,7 +115,7 @@ buttons['init_whitelist'] = async function (interaction) {
         interaction.reply({
             embeds: [
                 new EmbedBuilder()
-                .setDescription(`Aguarde, sua allowlist esta sendo preparada...`)
+                .setDescription(`Aguarde, sua allowlist está sendo preparada...`)
                 .setColor("#2f3136")
             ]
         })
@@ -126,56 +128,88 @@ buttons['init_whitelist'] = async function (interaction) {
                 embeds: [messages.whitelist.questionBuilder(client, question)],
                 components: [messages.whitelist.createButton('answer_quest', 'Responder pergunta', ButtonStyle.Secondary)]
             })
-        }, 2000)
+        }, 1000)
     }
 }
 
 buttons['answer_quest'] = async function (interaction) {
+    if (!usersCache[interaction.member.id]) {
+        return;
+    }
+
     let questNumber = usersCache[interaction.member.id].quest
     let question = config.whitelist.questions[questNumber]
-
     if (questNumber != null) {
-        let [modal, modelQuestion] = messages.whitelist.createTextInput(question)
-        let modelQuestionRow = new ActionRowBuilder().addComponents(modelQuestion)
-
+        const [modal, modelQuestion] = messages.whitelist.createTextInput(question)
+        
+        const modelQuestionRow = new ActionRowBuilder().addComponents(modelQuestion)
         modal.addComponents(modelQuestionRow)
+        
         await interaction.showModal(modal)
-        const result = await interaction.awaitModalSubmit({
-            time: question.time * 60000
-        })
-        if (result && usersCache[interaction.member.id].quest == questNumber) {
-            clearTimeout(usersCache[interaction.member.id] ?.timeout)
 
-            if (!question.history) {
+        const result = await interaction.awaitModalSubmit({
+            time: question.time * 60000,
+            filter: i => i.user.id === interaction.user.id,
+        })
+
+        if (result && usersCache[interaction.member.id].quest == questNumber) {
+            if (question.isWhitelistId) {
+                let whitelistIdInput = result.fields.getTextInputValue(`question-${question.id}`);
+                let whitelistId = parseInt(whitelistIdInput);
+                if (whitelistId == null || isNaN(whitelistId)) {
+                    result.reply({
+                        embeds: [
+                            new EmbedBuilder()
+                            .setDescription("O ID de Allowlist é inválido.")
+                            .setColor("#2f3136")
+                        ],
+                    });
+                    return;
+                }
+
+                usersCache[interaction.member.id].whitelistId = whitelistId;
+
                 usersCache[interaction.member.id].answers.push({
                     name: question.question,
                     value: result.fields.getTextInputValue(`question-${question.id}`)
-                })
-            } else {
-                usersCache[interaction.member.id].history = result.fields.getTextInputValue(`question-${question.id}`)
+                });
+
+                await mysql.query(`UPDATE ${bot_table} SET whitelist_id = ? WHERE channel_id = ?`, [whitelistId, interaction.channel.id]);
+            }
+            else if (question.history) {
+                usersCache[interaction.member.id].history = result.fields.getTextInputValue(`question-${question.id}`);
+            }
+            else {
+                usersCache[interaction.member.id].answers.push({
+                    name: question.question,
+                    value: result.fields.getTextInputValue(`question-${question.id}`)
+                });
             }
 
+            clearTimeout(usersCache[interaction.member.id] ?.timeout);
+
             if (config.whitelist.questions[questNumber + 1]) {
-                usersCache[interaction.member.id].timeout = createTimeout(question.time, interaction)
-                usersCache[interaction.member.id].quest++
-                questNumber = usersCache[interaction.member.id].quest
-                question = config.whitelist.questions[questNumber]
+                usersCache[interaction.member.id].timeout = createTimeout(question.time, interaction);
+                usersCache[interaction.member.id].quest++;
+
+                questNumber = usersCache[interaction.member.id].quest;
+                question = config.whitelist.questions[questNumber];
 
                 result.reply({
                     embeds: [
                         new EmbedBuilder()
-                        .setDescription("Resposta coletada, estou preparando a proxima pergunta!")
+                        .setDescription("Resposta coletada. Estamos preparando a próxima pergunta!")
                         .setColor("#2f3136")
                     ],
-                })
+                });
+
                 result.deleteReply()
 
                 interaction.editReply({
                     content: `<@${interaction.member.id}>`,
                     embeds: [messages.whitelist.questionBuilder(client, question)],
                     components: [messages.whitelist.createButton('answer_quest', 'Responder pergunta', ButtonStyle.Secondary)]
-                })
-
+                });
             } else {
                 await interaction.message.edit({
                     content: `<@${interaction.member.id}>`,
@@ -186,7 +220,7 @@ buttons['answer_quest'] = async function (interaction) {
                 result.reply({
                     embeds: [
                         new EmbedBuilder()
-                        .setDescription("Canal será encerrado dentro de 10 segundos")
+                        .setDescription("Este canal será apagado dentro de 10 segundos.")
                         .setColor("#2f3136")
                     ],
                     ephemeral: true
@@ -195,22 +229,32 @@ buttons['answer_quest'] = async function (interaction) {
                 const guild = interaction.member.guild
                 await guild.channels.fetch(config.whitelist.channel).then(async channel => {
                     const content = usersCache[interaction.member.id].history
-                    const file = new AttachmentBuilder(Buffer.from(content), {
-                        name: 'history.txt'
-                    })
+                    let files = [];
+                    if (content) {
+                        const file = new AttachmentBuilder(Buffer.from(content), {
+                            name: 'history.txt'
+                        })
 
-                    await interaction.member.roles.add(config.whitelist.waiting_role).catch(() => console.log(`Não tenho permissões para alterar os cargos do usuário ${interaction.member.id}`))
+                        files = [file]
+                    }
+
+                    if (config.whitelist.waiting_role != "") {
+                        await interaction.member.roles.add(config.whitelist.waiting_role).catch(() => console.log(`Não tenho permissões para alterar os cargos do usuário ${interaction.member.id}`))
+                    }
+
                     await channel.send({
-                        content: `Formulario de <@${interaction.member.id}>`,
+                        content: `Formulário de <@${interaction.member.id}>`,
                         embeds: [messages.whitelist.formBody(usersCache[interaction.member.id], interaction.member.id)],
                         components: [
                             messages.whitelist.createResultButtons(interaction.member.id)
                         ],
-                        files: [file]
+                        files: files
                     })
                 })
 
-                setTimeout(() => {
+                setTimeout(async () => {
+                    await mysql.query(`UPDATE ${bot_table} SET channel_id = 0 WHERE channel_id = ? AND is_finished = 0`, [interaction.channel.id])
+
                     interaction.channel.delete()
                     delete(usersCache[interaction.member.id])
                 }, 10000)
@@ -221,7 +265,7 @@ buttons['answer_quest'] = async function (interaction) {
         await interaction.reply({
             embeds: [
                 new EmbedBuilder()
-                .setDescription("Houve um erro, inicie sua whitelist novamente")
+                .setDescription("Houve um erro. Inicie sua Allowlist novamente")
                 .setColor("#2f3136")
             ],
             ephemeral: true
@@ -254,12 +298,17 @@ client.on('interactionCreate', async interaction => {
             })
         }
 
-        const channel = await guild.channels.fetch(config.whitelist.result).catch(() => {})
-        if (channel != config.whitelist.result) {
+        let resultChannelId = config.whitelist.resultApproval;
+        if (buttonValue.startsWith('fail-')) {
+            resultChannelId = config.whitelist.resultReject;
+        }
+
+        const channel = await guild.channels.fetch(resultChannelId).catch(() => {})
+        if (channel != resultChannelId) {
             interaction.reply({
                 embeds: [
                     new EmbedBuilder()
-                    .setDescription("Não foi possivel encontrar o canal para enviar os resultados da whitelist!")
+                    .setDescription("Não foi possivel encontrar o canal para enviar os resultados da allowlist!")
                     .setColor("#2f3136")
                 ],
                 ephemeral: true
@@ -268,15 +317,16 @@ client.on('interactionCreate', async interaction => {
 
         const [
             [whitelist]
-        ] = await mysql.query(`SELECT id, is_finished FROM ${bot_table} WHERE type = 'whitelist' AND discord_id = ?`, [discord_id])
+        ] = await mysql.query(`SELECT id, whitelist_id, is_finished FROM ${bot_table} WHERE type = 'whitelist' AND discord_id = ?`, [discord_id])
         const [
             [whitelistAwait]
         ] = await mysql.query(`SELECT 1, is_finished FROM ${bot_table} WHERE type = 'whitelist' AND discord_id = ? AND is_finished = 0`, [discord_id])
+        
         if (whitelist ?.is_finished && !whitelistAwait) {
             return interaction.reply({
                 embeds: [
                     new EmbedBuilder()
-                    .setDescription("Whitelist deste usuário ja foi lida!")
+                    .setDescription("A Allowlist deste usuário já foi lida!")
                     .setColor("#2f3136")
                 ],
                 ephemeral: true,
@@ -289,7 +339,7 @@ client.on('interactionCreate', async interaction => {
             return interaction.reply({
                 embeds: [
                     new EmbedBuilder()
-                    .setDescription("Usuário não se encontra disponivel, whitelist foi desconsiderada!")
+                    .setDescription("Este usuário não se encontra disponível. A Allowlist foi desconsiderada!")
                     .setColor("#2f3136")
                 ],
                 ephemeral: true
@@ -299,12 +349,13 @@ client.on('interactionCreate', async interaction => {
         const newEmbed = interaction.message.embeds[0]
         if (buttonValue.startsWith('approve-')) {
             channel.send({
-                content: `<:982734150610083851:1037435657229963364> <@${member.id}> sua **ALLOWLIST** foi **APROVADA** em nosso servidor, \`\`PARABÉNS\`\`!, Agora aguarde para **PARTICIPAR**.`
+                //content: `<a:white_certo:1156321580117401670> <@${member.id}> sua **ALLOWLIST** foi **APROVADA** em nosso servidor. \`\`PARABÉNS\`\`! Agora aguarde para ser **ENTREVISTADO**.`
+                content: `<a:white_certo:1156321580117401670> <@${member.id}> sua **ALLOWLIST** foi **APROVADA** em nosso servidor. \`\`PARABÉNS\`\`! Você foi liberado.`
             })
 
             interaction.message.edit({
                 embeds: [{
-                    title: 'Whitelist foi aprovada!',
+                    title: 'Allowlist foi aprovada!',
                     description: newEmbed.description,
                     fields: newEmbed.fields,
                     color: newEmbed.color,
@@ -318,12 +369,14 @@ client.on('interactionCreate', async interaction => {
 
             member.roles.add(config.whitelist.approved_role)
             member.roles.remove(config.whitelist.waiting_role).catch(() => {})
-            await mysql.query(`UPDATE ${bot_table} SET is_finished = 1 WHERE id = ?`, [whitelist.id])
+
+            await mysql.query(`UPDATE ${bot_table} SET is_finished = 1 WHERE id = ?`, [whitelist.id]);
+            await mysql.query(`UPDATE ${whitelist_table} SET is_whitelisted = 1 WHERE id = ?`, [whitelist.whitelist_id]);
 
             interaction.reply({
                 embeds: [
                     new EmbedBuilder()
-                    .setDescription("Whitelist aprovada com sucesso!")
+                    .setDescription("Allowlist aprovada com sucesso!")
                     .setColor("#2f3136")
                 ],
                 ephemeral: true
@@ -332,12 +385,12 @@ client.on('interactionCreate', async interaction => {
             member.roles.remove(config.whitelist.waiting_role).catch(() => {})
 
             channel.send({
-                content: `<:9827332621851771081:1035983050368090172> <@${member.id}> sua **ALLOWLIST** foi **REPROVADA** em nosso servidor! Preste mais atenção nas perguntas e na elaboração da sua próxima **ALLOWLIST**.`
+                content: `<a:white_errado:1156320190687092746> <@${member.id}> sua **ALLOWLIST** foi **REPROVADA** em nosso servidor! Preste mais atenção nas perguntas e na elaboração da sua próxima **ALLOWLIST**.`
             })
 
             interaction.message.edit({
                 embeds: [{
-                    title: 'Whitelist foi reprovada!',
+                    title: 'Allowlist foi reprovada!',
                     description: newEmbed.description,
                     fields: newEmbed.fields,
                     color: newEmbed.color,
@@ -353,7 +406,7 @@ client.on('interactionCreate', async interaction => {
             interaction.reply({
                 embeds: [
                     new EmbedBuilder()
-                    .setDescription("Whitelist reprovada com sucesso!")
+                    .setDescription("Allowlist reprovada com sucesso!")
                     .setColor("#2f3136")
                 ],
                 ephemeral: true
@@ -369,7 +422,7 @@ function createTimeout(time, interaction, member) {
             interaction.member.send({
                 embeds: [
                     new EmbedBuilder()
-                    .setDescription(`<:984174973633589328:1036146543721459784> **<@${interaction.member.id}>**, fechei sua sala de **ALLOWLIST** por ter passado o tempo limite para **COMEÇAR** a mesma, caso queira reabrir e tentar novamente por favor vá na sala <#1035799148982698004>`)
+                    .setDescription(`<a:white_exclamation:1156321425821536317> **<@${interaction.member.id}>**, fechei sua sala de **ALLOWLIST** por ter passado o tempo limite para **COMEÇAR** a mesma. Caso queira reabrir e tentar novamente por favor vá na sala <#1121151498022301818>`)
                     .setColor('#2f3136')
                 ]
             })
@@ -382,14 +435,14 @@ function createTimeout(time, interaction, member) {
     }, 60000 * time)
 }
 
-function createFirstTimeout(channel, member) {
+function createFirstTimeout(channel, member, duration) {
     return setTimeout(async () => {
         const guild = member.guild
         guild.channels.fetch(channel.id).then(channel => {
             channel.delete()
             cancelWhitelist(member.id)
         }, () => {})
-    }, 30000)
+    }, duration)
 }
 
 async function cancelWhitelist(member_id) {

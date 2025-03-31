@@ -7,13 +7,14 @@ import {
     EmbedBuilder,
     TextInputBuilder,
     TextInputStyle,
-    SelectMenuBuilder
+    SelectMenuBuilder,
+    PermissionFlagsBits
 } from 'discord.js'
 
 export default {
     whitelist: {
         defaultMessage: {
-            description: '> <:984495074777894972:1036824611167404042>  **ATENÇÃO ANTES DE COMEÇAR A SUA ALLOWLIST**\n\n```ALLOWLIST NORMAL```Nossa **Allowlist Normal** você pode fazer a qualquer momento e terá seu resultado enviado pelo seu **PRIVADO** assim que lida e avaliada.\n\n> ``❗ MUITA ATENÇÃO ❗``\nPrepare sua história para ter no máximo **4000 CARACTERES,** ``NÃO É PERMITIDO`` o envio de LINKS ou de ARQUIVOS nas respostas da sua **ALLOWLIST **caso seja enviado a **ALLOWLIST **é cancelada.',
+            description: '> <a:red_alerta:1156317159107088485> **ATENÇÃO! ANTES DE COMEÇAR A SUA ALLOWLIST**\n\n```ALLOWLIST NORMAL```Você pode fazer nossa **Allowlist Normal** a qualquer momento, e o resultado será enviado para o seu **PRIVADO** assim que tiver sido lida e avaliada.\n\n> ``❗ MUITA ATENÇÃO ❗``\nPrepare sua história para ter, no máximo, **4000 CARACTERES**. ``NÃO É PERMITIDO`` o envio de LINKS ou de ARQUIVOS nas respostas da sua **ALLOWLIST**. Caso envie, a sua **ALLOWLIST **será rejeitada!',
             color: 0x2f3136,
             image: {
                 url: config.whitelist.imageurl,
@@ -26,7 +27,7 @@ export default {
         waitResult: {
             embeds: [
                 new EmbedBuilder()
-                    .setDescription("Você ja está em processo de analise, aguarde até que o resulto seja informado")
+                    .setDescription("Você já está em processo de análise. Aguarde até que o resultado seja divulgado.")
                     .setColor("#2f3136")
             ],
             ephemeral: true
@@ -35,7 +36,7 @@ export default {
         rateLimit: {
             embeds: [
                 new EmbedBuilder()
-                    .setDescription("Existem muitas whitelist sendo feitas no momento, aguarde um momento...")
+                    .setDescription("Existem muitas allowlists sendo feitas no momento. Aguarde um pouco...")
                     .setColor("#2f3136")
             ],
             ephemeral: true
@@ -43,7 +44,7 @@ export default {
 
         finished: {
             title: '**Finalizando**',
-            description: 'Estou computando suas respostas...\nAguarde, isso pode livar alguns segundos.',
+            description: 'Estou computando suas respostas...\nAguarde, isso pode levar alguns segundos.',
             color: 0x2f3136,
         },
 
@@ -51,17 +52,17 @@ export default {
             return {
                 name: '📄┆allowlist-' + IdentifierGenerator(),
                 parent: category,
-                topic: 'Formulario para whitelist',
-                reason: 'Criando formulario de whitelist',
+                topic: 'Formulário para Allowlist',
+                reason: 'Criando formulário de allowlist',
 
                 permissionOverwrites: [{
                     id: member.id,
-                    allow: ['ViewChannel'],
-                    deny: ['SendMessages']
+                    allow: [PermissionFlagsBits.ViewChannel],
+                    deny: [PermissionFlagsBits.SendMessages]
                 },
                 {
                     id: guild.roles.everyone.id,
-                    deny: ['ViewChannel']
+                    deny: [PermissionFlagsBits.ViewChannel]
                 },
                 ]
             }
@@ -76,7 +77,7 @@ export default {
                         name: `📝 Allowlist - ${client.guilds.cache.get(config.idservidor.id).name}`,
                         icon_url: `${client.user.avatarURL()}`
                     },
-                    description: 'Aqui vão algumas dicas para você antes de iniciar a sua **ALLOWLIST**:\n\n<:902992933026938950:1036378607624392774> Você tem **5 minutos** para **iniciar a allowlist** e **3 minutos** por **pergunta para responder**, caso contrário a **sala se fecha** e você terá que começar novamente.\n\n<:902992933026938950:1036378607624392774> Cada **RESPOSTA **tem o limite de **4000 CARACTERES** para quem **TEM NITRO** e **2000 CARACTERES** para quem **NÃO TEM NITRO**, caso precise ultrapassar você pode utilizar o **Paste Bin** para enviar o link, esse recurso só pode ser usado se a pergunta pedir envio da **HISTÓRIA **do seu personagem. Caso você anexe um **ARQUIVO **ou envie **LINK ** em qualquer outra pergunta sem ser na solicitada história sua **ALLOWLIST ** será **ANULADA ** e você terá que começar do zero.\n\n<:902992933026938950:1036378607624392774> Caso não queira enviar sua **ALLOWLIST** para análise no final por algum erro você pode **OPTAR** por **ENVIAR** ou **NÃO ENVIAR**.\n\n**❗ Esse canal será deletado 30 segundos após envio da sua allowlist**.',
+                    description: 'Aqui vão algumas dicas para você antes de iniciar a sua **ALLOWLIST**:\n\n<a:setinha:1156301587480850512> Você tem **5 minutos** para **iniciar a allowlist** e **3 minutos** por **pergunta para responder**, caso contrário a **sala se fecha** e você terá que começar novamente.\n\n<a:setinha:1156301587480850512> Cada **RESPOSTA **tem o limite de **4000 CARACTERES** para quem **TEM NITRO** e **2000 CARACTERES** para quem **NÃO TEM NITRO**, caso precise ultrapassar você pode utilizar o **Paste Bin** para enviar o link. Esse recurso só pode ser usado se a pergunta pedir envio da **HISTÓRIA **do seu personagem. Caso você anexe um **ARQUIVO **ou envie **LINK ** em qualquer outra pergunta sem ser na solicitada história, sua **ALLOWLIST ** será **ANULADA ** e você terá que começar do zero.\n\n<a:setinha:1156301587480850512> Caso não queira enviar sua **ALLOWLIST** para análise no final por algum erro você pode **OPTAR** por **ENVIAR** ou **NÃO ENVIAR**.\n\n**❗ Esse canal será deletado 30 segundos após envio da sua allowlist**.',
                 }],
                 components: [
                     new ActionRowBuilder()
@@ -85,7 +86,7 @@ export default {
                                 .setCustomId('init_whitelist')
                                 .setStyle(ButtonStyle.Primary)
                                 .setEmoji('📝')
-                                .setLabel('Iniciar Allowlist')
+                                .setLabel('Começar')
 
                         )
                 ]
@@ -94,19 +95,19 @@ export default {
 
         questionBuilder: function (client, question) {
             return {
-                title: `<:984536142772846594:1038302735004598322> PERGUNTA ${question.id}/18`,
+                title: `<:artigo_msg:1156316560403730512> Pergunta ${question.id}/${config.whitelist.questions.length}`,
                 description: `> ${question.question}`,
                 color: 0x2f3136,
                 footer: { text: `> Você tem ${question.time} minuto(s) para responder` },
             }
         },
 
-        createButton: function (custom_id, label, ButtonStyle) {
+        createButton: function (custom_id, label, btnColor) {
             return new ActionRowBuilder()
                 .addComponents(
                     new ButtonBuilder()
                         .setCustomId(custom_id)
-                        .setStyle(ButtonStyle)
+                        .setStyle(btnColor)
                         .setLabel(label)
                 )
         },
@@ -117,14 +118,14 @@ export default {
                     new ButtonBuilder()
                         .setCustomId(`approve-${member_id}`)
                         .setStyle(ButtonStyle.Success)
-                        .setLabel('Aprovar Whitelist')
+                        .setLabel('Aprovar')
                         .setEmoji('<:1035048119999668264:1036364037115613194>')
                 )
                 .addComponents(
                     new ButtonBuilder()
                         .setCustomId(`fail-${member_id}`)
                         .setStyle(ButtonStyle.Danger)
-                        .setLabel('Reprovar Whitelist')
+                        .setLabel('Reprovar')
                         .setEmoji('<:9827332621851771081:1035983050368090172>')
                 )
         },
@@ -132,30 +133,30 @@ export default {
         createTextInput: function (question) {
             const modal = new ModalBuilder()
                 .setCustomId(`question-${question.id}`)
-                .setTitle(`PERGUNTA ${question.id}/18`)
+                .setTitle(`Pergunta ${question.id}/${config.whitelist.questions.length}`)
 
             const TextInput = new TextInputBuilder()
-                .setValue(' ')
-                .setMinLength(1)
+                .setCustomId(`question-${question.id}`)
+                //.setValue(' ')
+                .setMaxLength(question.maxLength)
+                .setMinLength(question.minLength ? question.minLength : 1)
                 .setRequired(true)
                 .setLabel('Responda atentamente a sua allowlist')
-                .setMaxLength(question.caracteres)
-                .setCustomId(`question-${question.id}`)
                 .setPlaceholder('Escreva sua resposta aqui')
-                .setStyle(question.caracteres > 256 ? TextInputStyle.Paragraph : TextInputStyle.Short)
+                .setStyle(question.maxLength > 256 ? TextInputStyle.Paragraph : TextInputStyle.Short)
 
             return [modal, TextInput]
         },
 
         formBody: function (member_infos, member_id) {
             return {
-                title: 'Analise de whitelist',
+                title: 'Análise de Allowlist',
                 color: 0x2f3136,
-                description: `Formulario feito por: <@${member_id}>`,
+                description: `Formulário feito por: <@${member_id}>`,
                 fields: member_infos.answers,
                 timestamp: new Date().toISOString(),
                 footer: {
-                    text: 'Usuário em analise'
+                    text: 'Usuário em análise'
                 },
             }
         },
@@ -164,7 +165,7 @@ export default {
             .addComponents(
                 new SelectMenuBuilder()
                     .setCustomId('create_whitelist')
-                    .setPlaceholder('selecione uma opção')
+                    .setPlaceholder('Selecione uma opção')
                     .addOptions(config.allowlistcategories.categories),
             )
     },

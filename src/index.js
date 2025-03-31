@@ -11,6 +11,7 @@ import './commands/connect.js'
 import './commands/liberation.js'
 import './commands/verification.js'
 import './commands/call.js'
+import './commands/suggestion.js'
 
 //events
 import './events/events.js'

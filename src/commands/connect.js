@@ -18,7 +18,7 @@ commands['connect'] = async function (interaction) {
     const message = await interaction.channel.send({
         embeds: [
             new EmbedBuilder()
-            .setDescription('Buscando Informações')
+            .setDescription('Buscando informações')
             .setColor("#2f3136")
         ]
     })
@@ -26,7 +26,7 @@ commands['connect'] = async function (interaction) {
     const row = new ActionRowBuilder()
         .addComponents(
             new ButtonBuilder()
-            .setLabel('Fivem')
+            .setLabel('FiveM')
             .setURL(config.connect.link)
             .setStyle(ButtonStyle.Link)
             .setEmoji('<:942278445382111244:1036135263879045161>')
@@ -47,7 +47,7 @@ commands['connect'] = async function (interaction) {
                     .setColor("#2f3136")
                     .setThumbnail(`${interaction.guild.iconURL({ dynamic: true })}`)
                     .setFooter({
-                        text: `Mensage atualiza a cada 5 minutos || Ultima atualização: ${date().formattedHours}`,
+                        text: `Mensagem atualiza a cada 5 minutos || Última atualização: ${date().formattedHours}`,
                         iconURL: 'https://cdn.discordapp.com/emojis/593109163354357760.gif'
                     })
                     .addFields({
@@ -59,7 +59,7 @@ commands['connect'] = async function (interaction) {
                         value: "**```ini" + `\n[ ${players} / ${config.connect.players} ]` + "```**",
                         inline: true
                     }, {
-                        name: "**> __IP Fivem__:**",
+                        name: "**> __IP FiveM__:**",
                         value: "**```fix\n" + config.connect.link + "```**"
                     })
                 ]
