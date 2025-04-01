@@ -112,7 +112,7 @@ buttons['init_whitelist'] = async function (interaction) {
     const question = config.whitelist.questions[questNumber]
 
     if (question) {
-        interaction.reply({
+        await interaction.reply({
             embeds: [
                 new EmbedBuilder()
                 .setDescription(`Aguarde, sua allowlist está sendo preparada...`)
@@ -195,7 +195,7 @@ buttons['answer_quest'] = async function (interaction) {
                 questNumber = usersCache[interaction.member.id].quest;
                 question = config.whitelist.questions[questNumber];
 
-                result.reply({
+                await result.reply({
                     embeds: [
                         new EmbedBuilder()
                         .setDescription("Resposta coletada. Estamos preparando a próxima pergunta!")
