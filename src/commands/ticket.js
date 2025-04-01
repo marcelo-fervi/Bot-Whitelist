@@ -1,18 +1,15 @@
 import mysql from '../mysql.js'
 import config from '../config.js'
 import messages from '../messages.js'
-const bot_table = config.ticket.table
 import client, {
     selects,
     commands
 } from '../client.js'
 import {
-    ActionRowBuilder,
-    ButtonBuilder,
     EmbedBuilder,
-    ButtonStyle,
-    Embed
+    MessageFlags
 } from 'discord.js'
+const bot_table = config.ticket.table
 
 selects['create_ticket'] = async function (interaction) {
     interaction.message.edit({
@@ -30,7 +27,7 @@ selects['create_ticket'] = async function (interaction) {
                 .setDescription(`Você ja possui um ticket criado: <#${ticket_created.channel_id}>`)
                 .setColor("#2f3136")
             ],
-            ephemeral: true
+            flags: [MessageFlags.Ephemeral]
         })
     }
 
@@ -46,7 +43,7 @@ selects['create_ticket'] = async function (interaction) {
             .setDescription(`ℹ️ **${interaction.user.username}**, seu **TICKET** foi criado com sucesso no canal <#${channel.id}>`)
             .setColor("#2f3136")
         ],
-        ephemeral: true
+        flags: [MessageFlags.Ephemeral]
     })
 }
 
@@ -110,7 +107,7 @@ commands['ticket'] = async function (interaction) {
             .setDescription('Mensagem de criação de ticket foi enviada!')
             .setColor("#2f3136")
         ],
-        ephemeral: true
+        flags: [MessageFlags.Ephemeral]
     })
 }
 

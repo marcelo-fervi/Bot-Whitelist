@@ -1,5 +1,5 @@
 import { ActionRowBuilder, ButtonBuilder, EmbedBuilder } from "@discordjs/builders";
-import { ButtonStyle, PermissionFlagsBits } from "discord.js";
+import { ButtonStyle, PermissionFlagsBits, MessageFlags } from "discord.js";
 import config from "../config.js";
 import { commands } from "../client.js";
 
@@ -13,9 +13,10 @@ commands['call'] = async function (interaction) {
                     .setDescription(`\\❌ **| Você precisa ter o cargo <@&${cargo_perm}> para utilizar este comando.**`)
                     .setColor(0x2f3136)
             ],
-            ephemeral: true
+            flags: [MessageFlags.Ephemeral]
         })
-    } else {
+    }
+    else {
 
         if (!interaction.channel.permissionsFor(interaction.client.user).has(PermissionFlagsBits.Administrator))
             return interaction.reply({
@@ -24,10 +25,10 @@ commands['call'] = async function (interaction) {
                         .setDescription(`**\\❌ | ${interaction.user}, Eu preciso da permissão \`Administrador\`**`)
                         .setColor(0x2f3136)
                 ],
-                ephemeral: true,
+                flags: [MessageFlags.Ephemeral]
             })
 
-        interaction.reply({ content: "Painel enviado!", ephemeral: true })
+        interaction.reply({ content: "Painel enviado!", flags: [MessageFlags.Ephemeral] })
 
         let embed = new EmbedBuilder()
             .setColor(0x2f3136)

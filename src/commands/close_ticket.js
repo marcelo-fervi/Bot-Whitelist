@@ -16,7 +16,8 @@ import {
     ActionRowBuilder,
     ButtonBuilder,
     EmbedBuilder,
-    ButtonStyle
+    ButtonStyle,
+    MessageFlags
 } from 'discord.js'
 
 commands['close_ticket'] = async function (interaction) {
@@ -28,7 +29,7 @@ commands['close_ticket'] = async function (interaction) {
                 .setDescription('Ticket será encerrado em 5 segundo(s)')
                 .setColor("#2f3136")
         ],
-        ephemeral: true
+        flags: [MessageFlags.Ephemeral]
     })
 
     for (let index = 4; index >= 0; index--) {
@@ -64,7 +65,7 @@ commands['request_close'] = async function (interaction) {
                     .setDescription('Você não está em um ticket.')
                     .setColor("#2f3136")
             ],
-            ephemeral: true
+            flags: [MessageFlags.Ephemeral]
         })
     }
 
@@ -75,7 +76,7 @@ commands['request_close'] = async function (interaction) {
                     .setDescription(`<:9827332621851771081:1035983050368090172> **${interaction.user.username}**, você não tem permissão para usar essa função.`)
                     .setColor("#2f3136")
             ],
-            ephemeral: true
+            flags: [MessageFlags.Ephemeral]
         })
     }
 
@@ -102,7 +103,7 @@ commands['request_close'] = async function (interaction) {
                     .setLabel('Finalizar Ticket')
             )
         ],
-        ephemeral: true
+        flags: [MessageFlags.Ephemeral]
     })
 }
 

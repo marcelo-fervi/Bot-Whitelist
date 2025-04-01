@@ -5,7 +5,8 @@ import {
     ActionRowBuilder,
     ButtonBuilder,
     EmbedBuilder,
-    ButtonStyle
+    ButtonStyle,
+    MessageFlags
 } from 'discord.js'
 
 commands['verification'] = async function (interaction) {
@@ -45,6 +46,6 @@ commands['verification'] = async function (interaction) {
             .setDescription('Sistema de verificação iniciado')
             .setColor("#2f3136")
         ],
-        ephemeral: true
+        flags: [MessageFlags.Ephemeral]
     })
 }

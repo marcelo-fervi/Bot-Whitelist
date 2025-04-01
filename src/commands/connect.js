@@ -7,7 +7,8 @@ import {
     EmbedBuilder,
     ButtonBuilder,
     ActionRowBuilder,
-    ButtonStyle
+    ButtonStyle,
+    MessageFlags
 } from 'discord.js'
 
 import FiveM from 'fivem'
@@ -88,7 +89,7 @@ commands['connect'] = async function (interaction) {
             .setDescription('Sistema de connect iniciado')
             .setColor("#2f3136")
         ],
-        ephemeral: true
+        flags: [MessageFlags.Ephemeral]
     })
 }
 

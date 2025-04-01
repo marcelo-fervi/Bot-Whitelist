@@ -13,7 +13,8 @@ import {
     ActionRowBuilder,
     ButtonStyle,
     AttachmentBuilder,
-    EmbedBuilder
+    EmbedBuilder,
+    MessageFlags
 } from 'discord.js'
 
 commands['whitelist'] = async function (interaction) {
@@ -27,7 +28,7 @@ commands['whitelist'] = async function (interaction) {
             .setDescription('Sistema de allowlist criado.')
             .setColor("#2f3136")
         ],
-        ephemeral: true
+        flags: [MessageFlags.Ephemeral]
     })
 }
 
@@ -43,7 +44,7 @@ selects['create_whitelist'] = async function (interaction) {
                 .setDescription(`❌ ${interaction.user.username}, a **ALLOWLIST NORMAL** encontra-se fechada no momento.`)
                 .setColor("#FF0000")
             ],
-            ephemeral: true
+            flags: [MessageFlags.Ephemeral]
         },)
     }
 
@@ -64,7 +65,7 @@ selects['create_whitelist'] = async function (interaction) {
             .setDescription("Preparando sua allowlist")
             .setColor("#2f3136")
         ],
-        ephemeral: true
+        flags: [MessageFlags.Ephemeral]
     })
 
     const channel = await createWhitelist(
@@ -78,7 +79,7 @@ selects['create_whitelist'] = async function (interaction) {
             .setDescription(`📑 <@${interaction.member.id}>, foi criado o canal **<#${channel.id}>** para você começar a responder a sua allowlist.`)
             .setColor("#2f3136")
         ],
-        ephemeral: true
+        flags: [MessageFlags.Ephemeral]
     })
 }
 
@@ -200,7 +201,7 @@ buttons['answer_quest'] = async function (interaction) {
                         new EmbedBuilder()
                         .setDescription("Resposta coletada. Estamos preparando a próxima pergunta!")
                         .setColor("#2f3136")
-                    ],
+                    ]
                 });
 
                 result.deleteReply()
@@ -223,7 +224,7 @@ buttons['answer_quest'] = async function (interaction) {
                         .setDescription("Este canal será apagado dentro de 10 segundos.")
                         .setColor("#2f3136")
                     ],
-                    ephemeral: true
+                    flags: [MessageFlags.Ephemeral]
                 })
 
                 const guild = interaction.member.guild
@@ -268,7 +269,7 @@ buttons['answer_quest'] = async function (interaction) {
                 .setDescription("Houve um erro. Inicie sua Allowlist novamente")
                 .setColor("#2f3136")
             ],
-            ephemeral: true
+            flags: [MessageFlags.Ephemeral]
         })
 
         setTimeout(() => {
@@ -294,7 +295,7 @@ client.on('interactionCreate', async interaction => {
                     .setDescription('Você não possui permissão!')
                     .setColor("#2f3136")
                 ],
-                ephemeral: true
+                flags: [MessageFlags.Ephemeral]
             })
         }
 
@@ -311,7 +312,7 @@ client.on('interactionCreate', async interaction => {
                     .setDescription("Não foi possivel encontrar o canal para enviar os resultados da allowlist!")
                     .setColor("#2f3136")
                 ],
-                ephemeral: true
+                flags: [MessageFlags.Ephemeral]
             })
         }
 
@@ -329,7 +330,7 @@ client.on('interactionCreate', async interaction => {
                     .setDescription("A Allowlist deste usuário já foi lida!")
                     .setColor("#2f3136")
                 ],
-                ephemeral: true,
+                flags: [MessageFlags.Ephemeral]
             })
         }
 
@@ -342,7 +343,7 @@ client.on('interactionCreate', async interaction => {
                     .setDescription("Este usuário não se encontra disponível. A Allowlist foi desconsiderada!")
                     .setColor("#2f3136")
                 ],
-                ephemeral: true
+                flags: [MessageFlags.Ephemeral]
             })
         }
 
@@ -379,7 +380,7 @@ client.on('interactionCreate', async interaction => {
                     .setDescription("Allowlist aprovada com sucesso!")
                     .setColor("#2f3136")
                 ],
-                ephemeral: true
+                flags: [MessageFlags.Ephemeral]
             })
         } else if (buttonValue.startsWith('fail-')) {
             member.roles.remove(config.whitelist.waiting_role).catch(() => {})
@@ -409,7 +410,7 @@ client.on('interactionCreate', async interaction => {
                     .setDescription("Allowlist reprovada com sucesso!")
                     .setColor("#2f3136")
                 ],
-                ephemeral: true
+                flags: [MessageFlags.Ephemeral]
             })
         }
     }

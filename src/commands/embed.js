@@ -3,7 +3,8 @@ import {
 } from '../client.js'
 import messages from '../messages.js'
 import {
-    EmbedBuilder
+    EmbedBuilder,
+    MessageFlags
 } from 'discord.js'
 
 commands['embed'] = async function (interaction) {
@@ -22,6 +23,6 @@ commands['embed'] = async function (interaction) {
             .setDescription('Embed foi enviado!')
             .setColor("#2f3136")
         ],
-        ephemeral: true
+        flags: [MessageFlags.Ephemeral]
     })
 }

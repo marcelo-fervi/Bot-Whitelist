@@ -5,7 +5,8 @@ import {
     EmbedBuilder,
     ActionRowBuilder,
     ButtonBuilder,
-    ButtonStyle
+    ButtonStyle,
+    MessageFlags
 } from 'discord.js'
 import config from './config.js'
 
@@ -64,7 +65,7 @@ client.on('interactionCreate', interaction => {
                                 .setDescription(':x: | Você já tem acesso ao servidor')
                                 .setColor("Red")
                         ],
-                        ephemeral: true
+                        flags: [MessageFlags.Ephemeral]
                     })
 
                     return;
@@ -78,7 +79,7 @@ client.on('interactionCreate', interaction => {
                             .setDescription(`<:982734150610083851:1037435657229963364> **${interaction.user.username}**, obrigado por confirmar sua conta! Seja bem-vendo(a)!`)
                             .setColor("Green")
                     ],
-                    ephemeral: true
+                    flags: [MessageFlags.Ephemeral]
                 })
                 break
 
@@ -90,8 +91,7 @@ client.on('interactionCreate', interaction => {
                             .setDescription("A verificação de conta é para prevenir que contas indesejadas entre em nosso servidor, assim deixando uma comunidade mais segura e sem SPAM desnecessários em sua DM.")
                             .setColor("#2f3136")
                     ],
-
-                    ephemeral: true
+                    flags: [MessageFlags.Ephemeral]
                 })
                 break;
         }
@@ -232,7 +232,6 @@ client.login(process.env.TOKEN)
 client.on("interactionCreate", (interaction) => {
     if (interaction.isButton()) {
         if (interaction.customId === 'criarcall') {
-
             let quantmenu = new EmbedBuilder()
                 .setColor(0x2f3136)
                 .setAuthor({
@@ -249,18 +248,26 @@ client.on("interactionCreate", (interaction) => {
                         .setLabel("✅ Sim")
                         .setStyle(ButtonStyle.Success),
                 );
-            interaction.reply({ embeds: [quantmenu], components: [quantidadedeusers], ephemeral: true })
+            
+            interaction.reply({
+                embeds: [quantmenu],
+                components: [quantidadedeusers],
+                flags: [MessageFlags.Ephemeral]
+            })
         }
         else if (interaction.customId === "deletecall") {
             let canalquevaideletar = client.channels.cache.find(c => c.name == `${interaction.user.username}`)
-            if (!canalquevaideletar) return;
+            if (!canalquevaideletar) {
+                return;
+            }
+
             interaction.reply({
                 embeds: [
                     new EmbedBuilder()
                         .setDescription(`> ✅ ${interaction.user}, sua sala de atendimento foi deletada!`)
                         .setColor(0x2f3136)
                 ],
-                ephemeral: true
+                flags: [MessageFlags.Ephemeral]
             }).then(() => {
                 canalquevaideletar.delete();
             })
@@ -274,7 +281,7 @@ client.on("interactionCreate", (interaction) => {
                             .setDescription(`> *Você já possui uma call criada!* ${call}.\n *clique em* **DELETE** *ela e crie uma nova com a configuração desejada!*`)
                             .setColor(0x2f3136)
                     ],
-                    ephemeral: true
+                    flags: [MessageFlags.Ephemeral]
                 })
             }
             else {
@@ -300,7 +307,7 @@ client.on("interactionCreate", (interaction) => {
                             .setDescription(`> ✅ Seu atendimento foi criado em ${call}`)
                             .setColor(0x2f3136)
                     ],
-                    ephemeral: true
+                    flags: [MessageFlags.Ephemeral]
                 }))
             }
         }

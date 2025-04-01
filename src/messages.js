@@ -8,7 +8,8 @@ import {
     TextInputBuilder,
     TextInputStyle,
     SelectMenuBuilder,
-    PermissionFlagsBits
+    PermissionFlagsBits,
+    MessageFlags
 } from 'discord.js'
 
 export default {
@@ -30,7 +31,7 @@ export default {
                     .setDescription("Você já está em processo de análise. Aguarde até que o resultado seja divulgado.")
                     .setColor("#2f3136")
             ],
-            ephemeral: true
+            flags: [MessageFlags.Ephemeral]
         },
 
         rateLimit: {
@@ -39,7 +40,7 @@ export default {
                     .setDescription("Existem muitas allowlists sendo feitas no momento. Aguarde um pouco...")
                     .setColor("#2f3136")
             ],
-            ephemeral: true
+            flags: [MessageFlags.Ephemeral]
         },
 
         finished: {
@@ -55,15 +56,16 @@ export default {
                 topic: 'Formulário para Allowlist',
                 reason: 'Criando formulário de allowlist',
 
-                permissionOverwrites: [{
-                    id: member.id,
-                    allow: [PermissionFlagsBits.ViewChannel],
-                    deny: [PermissionFlagsBits.SendMessages]
-                },
-                {
-                    id: guild.roles.everyone.id,
-                    deny: [PermissionFlagsBits.ViewChannel]
-                },
+                permissionOverwrites: [
+                    {
+                        id: member.id,
+                        allow: [PermissionFlagsBits.ViewChannel],
+                        deny: [PermissionFlagsBits.SendMessages]
+                    },
+                    {
+                        id: guild.roles.everyone.id,
+                        deny: [PermissionFlagsBits.ViewChannel]
+                    },
                 ]
             }
         },

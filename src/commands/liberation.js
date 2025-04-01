@@ -2,11 +2,11 @@ import client, {
     commands
 } from '../client.js'
 import {
-    EmbedBuilder
+    EmbedBuilder,
+    MessageFlags
 } from 'discord.js'
 
 commands['liberation'] = async function (interaction) {
-
     interaction.channel.send({
         embeds: [
             new EmbedBuilder()
@@ -25,6 +25,6 @@ commands['liberation'] = async function (interaction) {
             .setDescription('Sistema de liberation iniciado')
             .setColor("#2f3136")
         ],
-        ephemeral: true
+        flags: [MessageFlags.Ephemeral]
     })
 }
