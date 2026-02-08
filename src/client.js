@@ -36,7 +36,7 @@ client.on('interactionCreate', interaction => {
         if (commands[interaction.commandName]) {
             commands[interaction.commandName](interaction)
         }
-    } else if (interaction.isSelectMenu()) {
+    } else if (interaction.isStringSelectMenu()) {
         if (selects[interaction.customId]) {
             selects[interaction.customId](interaction)
         }

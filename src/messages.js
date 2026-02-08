@@ -7,7 +7,7 @@ import {
     EmbedBuilder,
     TextInputBuilder,
     TextInputStyle,
-    SelectMenuBuilder,
+    StringSelectMenuBuilder,
     PermissionFlagsBits,
     MessageFlags
 } from 'discord.js'
@@ -164,7 +164,7 @@ export default {
 
         buttonCreateWhitelist: new ActionRowBuilder()
             .addComponents(
-                new SelectMenuBuilder()
+                new StringSelectMenuBuilder()
                     .setCustomId('create_whitelist')
                     .setPlaceholder('Selecione uma opção')
                     .addOptions(config.allowlistcategories.categories),
@@ -186,7 +186,7 @@ export default {
         createTicketButton: function () {
             return new ActionRowBuilder()
                 .addComponents(
-                    new SelectMenuBuilder()
+                    new StringSelectMenuBuilder()
                         .setCustomId('create_ticket')
                         .setPlaceholder('Clique aqui para escolher uma categoria')
                         .addOptions(config.ticket.categories),
