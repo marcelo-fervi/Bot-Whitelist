@@ -1,9 +1,6 @@
-const usersCache = {}
 import mysql from '../mysql.js'
 import config from '../config.js'
 import messages from '../messages.js'
-const bot_table = config.ticket.table
-const whitelist_table = config.liberation.table
 import client, {
     buttons,
     commands,
@@ -16,6 +13,10 @@ import {
     EmbedBuilder,
     MessageFlags
 } from 'discord.js'
+
+const usersCache = {}
+const bot_table = config.ticket.table
+const whitelist_table = config.liberation.table
 
 commands['whitelist'] = async function (interaction) {
     interaction.channel.send({
@@ -101,7 +102,7 @@ async function createWhitelist(category, member) {
 }
 
 buttons['init_whitelist'] = async function (interaction) {
-    clearTimeout(usersCache[interaction.member.id] ?.firstTimeout)
+    clearTimeout(usersCache[interaction.member.id]?.firstTimeout)
 
     usersCache[interaction.member.id] = {
         quest: 0,
@@ -135,9 +136,10 @@ buttons['init_whitelist'] = async function (interaction) {
 
 buttons['answer_quest'] = async function (interaction) {
     if (!usersCache[interaction.member.id]) {
-        return;
+        return
     }
 
+    //Those will be modified later on
     let questNumber = usersCache[interaction.member.id].quest
     let question = config.whitelist.questions[questNumber]
     if (questNumber != null) {
@@ -155,8 +157,8 @@ buttons['answer_quest'] = async function (interaction) {
 
         if (result && usersCache[interaction.member.id].quest == questNumber) {
             if (question.isWhitelistId) {
-                let whitelistIdInput = result.fields.getTextInputValue(`question-${question.id}`);
-                let whitelistId = parseInt(whitelistIdInput);
+                const whitelistIdInput = result.fields.getTextInputValue(`question-${question.id}`)
+                const whitelistId = parseInt(whitelistIdInput)
                 if (whitelistId == null || isNaN(whitelistId)) {
                     result.reply({
                         embeds: [
@@ -164,37 +166,37 @@ buttons['answer_quest'] = async function (interaction) {
                             .setDescription("O ID de Allowlist é inválido.")
                             .setColor("#2f3136")
                         ],
-                    });
-                    return;
+                    })
+                    return
                 }
 
-                usersCache[interaction.member.id].whitelistId = whitelistId;
+                usersCache[interaction.member.id].whitelistId = whitelistId
 
                 usersCache[interaction.member.id].answers.push({
                     name: question.question,
                     value: result.fields.getTextInputValue(`question-${question.id}`)
-                });
+                })
 
-                await mysql.query(`UPDATE ${bot_table} SET whitelist_id = ? WHERE channel_id = ?`, [whitelistId, interaction.channel.id]);
+                await mysql.query(`UPDATE ${bot_table} SET whitelist_id = ? WHERE channel_id = ?`, [whitelistId, interaction.channel.id])
             }
             else if (question.history) {
-                usersCache[interaction.member.id].history = result.fields.getTextInputValue(`question-${question.id}`);
+                usersCache[interaction.member.id].history = result.fields.getTextInputValue(`question-${question.id}`)
             }
             else {
                 usersCache[interaction.member.id].answers.push({
                     name: question.question,
                     value: result.fields.getTextInputValue(`question-${question.id}`)
-                });
+                })
             }
 
-            clearTimeout(usersCache[interaction.member.id] ?.timeout);
+            clearTimeout(usersCache[interaction.member.id]?.timeout)
 
             if (config.whitelist.questions[questNumber + 1]) {
-                usersCache[interaction.member.id].timeout = createTimeout(question.time, interaction);
-                usersCache[interaction.member.id].quest++;
+                usersCache[interaction.member.id].timeout = createTimeout(question.time, interaction)
+                usersCache[interaction.member.id].quest++
 
-                questNumber = usersCache[interaction.member.id].quest;
-                question = config.whitelist.questions[questNumber];
+                questNumber = usersCache[interaction.member.id].quest
+                question = config.whitelist.questions[questNumber]
 
                 await result.reply({
                     embeds: [
@@ -202,7 +204,7 @@ buttons['answer_quest'] = async function (interaction) {
                         .setDescription("Resposta coletada. Estamos preparando a próxima pergunta!")
                         .setColor("#2f3136")
                     ]
-                });
+                })
 
                 result.deleteReply()
 
@@ -210,7 +212,7 @@ buttons['answer_quest'] = async function (interaction) {
                     content: `<@${interaction.member.id}>`,
                     embeds: [messages.whitelist.questionBuilder(client, question)],
                     components: [messages.whitelist.createButton('answer_quest', 'Responder pergunta', ButtonStyle.Secondary)]
-                });
+                })
             } else {
                 await interaction.message.edit({
                     content: `<@${interaction.member.id}>`,
@@ -230,13 +232,13 @@ buttons['answer_quest'] = async function (interaction) {
                 const guild = interaction.member.guild
                 await guild.channels.fetch(config.whitelist.channel).then(async channel => {
                     const content = usersCache[interaction.member.id].history
-                    let files = [];
+                    const files = []
                     if (content) {
                         const file = new AttachmentBuilder(Buffer.from(content), {
                             name: 'history.txt'
                         })
 
-                        files = [file]
+                        files.push(file)
                     }
 
                     if (config.whitelist.waiting_role != "") {
@@ -287,8 +289,8 @@ client.on('interactionCreate', async interaction => {
         const discord_id = buttonValue.startsWith('approve-') ? buttonValue.replace('approve-', '') : buttonValue.replace('fail-', '')
 
         const staff = await guild.members.fetch(interaction.member.id).catch(() => {})
-        const is_staff = staff.roles.cache.has(config.whitelist.staff)
-        if (!is_staff) {
+        const hasStaffRole = staff.roles.cache.has(config.whitelist.staff)
+        if (!hasStaffRole) {
             return interaction.reply({
                 embeds: [
                     new EmbedBuilder()
@@ -299,9 +301,9 @@ client.on('interactionCreate', async interaction => {
             })
         }
 
-        let resultChannelId = config.whitelist.resultApproval;
+        let resultChannelId = config.whitelist.resultApproval
         if (buttonValue.startsWith('fail-')) {
-            resultChannelId = config.whitelist.resultReject;
+            resultChannelId = config.whitelist.resultReject
         }
 
         const channel = await guild.channels.fetch(resultChannelId).catch(() => {})
@@ -323,7 +325,7 @@ client.on('interactionCreate', async interaction => {
             [whitelistAwait]
         ] = await mysql.query(`SELECT 1, is_finished FROM ${bot_table} WHERE type = 'whitelist' AND discord_id = ? AND is_finished = 0`, [discord_id])
         
-        if (whitelist ?.is_finished && !whitelistAwait) {
+        if (whitelist?.is_finished && !whitelistAwait) {
             return interaction.reply({
                 embeds: [
                     new EmbedBuilder()
@@ -371,8 +373,8 @@ client.on('interactionCreate', async interaction => {
             member.roles.add(config.whitelist.approved_role)
             member.roles.remove(config.whitelist.waiting_role).catch(() => {})
 
-            await mysql.query(`UPDATE ${bot_table} SET is_finished = 1 WHERE id = ?`, [whitelist.id]);
-            await mysql.query(`UPDATE ${whitelist_table} SET is_whitelisted = 1 WHERE id = ?`, [whitelist.whitelist_id]);
+            await mysql.query(`UPDATE ${bot_table} SET is_finished = 1 WHERE id = ?`, [whitelist.id])
+            await mysql.query(`UPDATE ${whitelist_table} SET is_whitelisted = 1 WHERE id = ?`, [whitelist.whitelist_id])
 
             interaction.reply({
                 embeds: [

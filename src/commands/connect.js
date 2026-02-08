@@ -1,8 +1,8 @@
 import config from '../config.js'
-
-import client, {
+import {
     commands
 } from '../client.js'
+
 import {
     EmbedBuilder,
     ButtonBuilder,
@@ -48,7 +48,7 @@ commands['connect'] = async function (interaction) {
                     .setColor("#2f3136")
                     .setThumbnail(`${interaction.guild.iconURL({ dynamic: true })}`)
                     .setFooter({
-                        text: `Mensagem atualiza a cada 5 minutos || Última atualização: ${date().formattedHours}`,
+                        text: `Mensagem atualiza a cada 5 minutos || Última atualização: ${getCurrentFormattedDate().formattedHours}`,
                         iconURL: 'https://cdn.discordapp.com/emojis/593109163354357760.gif'
                     })
                     .addFields({
@@ -80,7 +80,7 @@ commands['connect'] = async function (interaction) {
 
     setInterval(() => {
         updateStatus()
-    }, 5 * 60000);
+    }, 5 * 60000)
 
 
     interaction.reply({
@@ -93,11 +93,11 @@ commands['connect'] = async function (interaction) {
     })
 }
 
-function date() {
-    const date = new Date();
-    const hours = date.getHours().toString().padStart(2, "0");
-    const minutes = date.getMinutes().toString().padStart(2, "0");
-    const segundos = date.getSeconds().toString().padStart(2, "0");
+function getCurrentFormattedDate() {
+    const date = new Date()
+    const hours = date.getHours().toString().padStart(2, "0")
+    const minutes = date.getMinutes().toString().padStart(2, "0")
+    const segundos = date.getSeconds().toString().padStart(2, "0")
     return {
         formattedTime: `${date.toLocaleDateString('pt-BR')}`,
         formattedHours: `${hours}:${minutes}:${segundos}`

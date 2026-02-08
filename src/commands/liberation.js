@@ -15,7 +15,7 @@ commands['liberation'] = async function (interaction) {
                 iconURL: `${client.user.avatarURL()}`
             })
             .setColor('#2f3136')
-            .setDescription(':arrow_right_hook: Para realizar sua liberação envie seu: **ID** logo abaixo.\n:arrow_right_hook: A Liberação é automática, caso ocorra algum problema abra um **TICKET**.\n:arrow_right_hook: Para obter seu **ID **você deve se conectar no servidor usando a sala de conexão!')
+            .setDescription(':arrow_right_hook: Para realizar sua liberação, envie seu: **ID** logo abaixo.\n:arrow_right_hook: A liberação é automática. Caso ocorra algum problema abra um **TICKET**.\n:arrow_right_hook: Para obter seu **ID** você deve se conectar no servidor usando a sala de conexão!')
         ]
     })
 

@@ -68,7 +68,7 @@ client.on('interactionCreate', interaction => {
                         flags: [MessageFlags.Ephemeral]
                     })
 
-                    return;
+                    return
                 }
 
                 interaction.member.roles.add(config.automatico.authrole)
@@ -93,7 +93,7 @@ client.on('interactionCreate', interaction => {
                     ],
                     flags: [MessageFlags.Ephemeral]
                 })
-                break;
+                break
         }
     }
 })
@@ -124,24 +124,26 @@ client.on('ready', async (interaction) => {
         //    name: `❤️ | By Junnin`,
         //    type: ActivityType.Watching
         //},
-    ];
+    ]
+
     const status = [
         'dnd'
-    ];
-    let i = 0;
+    ]
+
+    let i = 0
     setInterval(() => {
         if (i >= activities.length) i = 0
         client.user.setActivity(activities[i])
-        i++;
-    }, 5000);
+        i++
+    }, 5000)
 
-    let s = 0;
+    let s = 0
 
     setInterval(() => {
         if (s >= status.length) s = 0
         client.user.setStatus(status[s])
-        s++;
-    }, 20000);
+        s++
+    }, 20000)
 })
 
 client.on('ready', async () => {
@@ -220,8 +222,8 @@ client.on('ready', async () => {
             dmPermission: false
         }
     ])
-    console.log(('[LOGS]') + (' Modulos ligados com sucesso'))
-    console.log((`[LOGS] ${client.user.tag} Está online!\n[LOGS] Estou em ${client.guilds.cache.size} servidores.\n[LOGS] Cuidando de ${client.users.cache.size} membros.`))
+    console.log(('[LOGS] Módulos ligados com sucesso'))
+    console.log((`[LOGS] ${client.user.tag} está online!\n[LOGS] Estou em ${client.guilds.cache.size} servidores.\n[LOGS] Cuidando de ${client.users.cache.size} membros.`))
 })
 
 process.on('uncaughtException', err => console.error(err))
@@ -232,7 +234,7 @@ client.login(process.env.TOKEN)
 client.on("interactionCreate", (interaction) => {
     if (interaction.isButton()) {
         if (interaction.customId === 'criarcall') {
-            let quantmenu = new EmbedBuilder()
+            const createEmbed = new EmbedBuilder()
                 .setColor(0x2f3136)
                 .setAuthor({
                     name: `${interaction.user.username}`,
@@ -240,25 +242,24 @@ client.on("interactionCreate", (interaction) => {
                 })
                 .setDescription(`**• Deseja mesmo criar um canal de atendimento?**`)
 
-
-            let quantidadedeusers = new ActionRowBuilder()
+            const createRow = new ActionRowBuilder()
                 .addComponents(
                     new ButtonBuilder()
                         .setCustomId("criar")
                         .setLabel("✅ Sim")
                         .setStyle(ButtonStyle.Success),
-                );
+                )
             
             interaction.reply({
-                embeds: [quantmenu],
-                components: [quantidadedeusers],
+                embeds: [createEmbed],
+                components: [createRow],
                 flags: [MessageFlags.Ephemeral]
             })
         }
         else if (interaction.customId === "deletecall") {
-            let canalquevaideletar = client.channels.cache.find(c => c.name == `${interaction.user.username}`)
-            if (!canalquevaideletar) {
-                return;
+            const deleteTargetChannel = client.channels.cache.find(c => c.name == `${interaction.user.username}`)
+            if (!deleteTargetChannel) {
+                return
             }
 
             interaction.reply({
@@ -269,16 +270,16 @@ client.on("interactionCreate", (interaction) => {
                 ],
                 flags: [MessageFlags.Ephemeral]
             }).then(() => {
-                canalquevaideletar.delete();
+                deleteTargetChannel.delete()
             })
         }
         else if (interaction.customId === 'criar') {
             if (interaction.guild.channels.cache.find(call => call.name === `${interaction.user.username}`)) {
-                let call = interaction.guild.channels.cache.find(call => call.name === `${interaction.user.username}`);
+                const callChannel = interaction.guild.channels.cache.find(call => call.name === `${interaction.user.username}`)
                 interaction.reply({
                     embeds: [
                         new EmbedBuilder()
-                            .setDescription(`> *Você já possui uma call criada!* ${call}.\n *clique em* **DELETE** *ela e crie uma nova com a configuração desejada!*`)
+                            .setDescription(`> *Você já possui uma call criada!* ${callChannel}.\n *Clique em* **DELETE** *ela e crie uma nova com a configuração desejada!*`)
                             .setColor(0x2f3136)
                     ],
                     flags: [MessageFlags.Ephemeral]
@@ -298,7 +299,6 @@ client.on("interactionCreate", (interaction) => {
                         {
                             id: interaction.user.id,
                             allow: ["ViewChannel", "Stream", 'Connect', 'Speak', "SendMessages", "AddReactions", "AttachFiles", 'UseApplicationCommands'],
-
                         },
                     ]
                 }).then(call => interaction.reply({

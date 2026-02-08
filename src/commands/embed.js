@@ -8,7 +8,7 @@ import {
 } from 'discord.js'
 
 commands['embed'] = async function (interaction) {
-    const content = interaction.options ?.get('content') ?.value || ''
+    const content = interaction.options?.get('content')?.value || ''
     const title = interaction.options.get('title').value
     const description = interaction.options.get('description').value
 

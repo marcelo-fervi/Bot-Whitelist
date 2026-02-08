@@ -2,7 +2,7 @@
 import 'dotenv/config'
 import './client.js'
 
-// commands
+//commands
 import './commands/embed.js'
 import './commands/ticket.js'
 import './commands/whitelist.js'

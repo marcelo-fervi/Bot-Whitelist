@@ -15,7 +15,7 @@ import {
 export default {
     whitelist: {
         defaultMessage: {
-            description: '> <a:red_alerta:1156317159107088485> **ATENÇÃO! ANTES DE COMEÇAR A SUA ALLOWLIST**\n\n```ALLOWLIST NORMAL```Você pode fazer nossa **Allowlist Normal** a qualquer momento, e o resultado será enviado para o seu **PRIVADO** assim que tiver sido lida e avaliada.\n\n> ``❗ MUITA ATENÇÃO ❗``\nPrepare sua história para ter, no máximo, **4000 CARACTERES**. ``NÃO É PERMITIDO`` o envio de LINKS ou de ARQUIVOS nas respostas da sua **ALLOWLIST**. Caso envie, a sua **ALLOWLIST **será rejeitada!',
+            description: '> <a:red_alerta:1156317159107088485> **ATENÇÃO! ANTES DE COMEÇAR A SUA ALLOWLIST**\n\n```ALLOWLIST NORMAL```Você pode fazer nossa **Allowlist Normal** a qualquer momento, e o resultado será enviado para o seu **PRIVADO** assim que tiver sido lida e avaliada.\n\n> ``❗ MUITA ATENÇÃO ❗``\nPrepare sua história para ter, no máximo, **4000 CARACTERES**. ``NÃO É PERMITIDO`` o envio de LINKS ou de ARQUIVOS nas respostas da sua **ALLOWLIST**. Caso envie, a sua **ALLOWLIST** será rejeitada!',
             color: 0x2f3136,
             image: {
                 url: config.whitelist.imageurl,
@@ -89,7 +89,6 @@ export default {
                                 .setStyle(ButtonStyle.Primary)
                                 .setEmoji('📝')
                                 .setLabel('Começar')
-
                         )
                 ]
             }
@@ -137,7 +136,7 @@ export default {
                 .setCustomId(`question-${question.id}`)
                 .setTitle(`Pergunta ${question.id}/${config.whitelist.questions.length}`)
 
-            const TextInput = new TextInputBuilder()
+            const textInput = new TextInputBuilder()
                 .setCustomId(`question-${question.id}`)
                 //.setValue(' ')
                 .setMaxLength(question.maxLength)
@@ -147,7 +146,7 @@ export default {
                 .setPlaceholder('Escreva sua resposta aqui')
                 .setStyle(question.maxLength > 256 ? TextInputStyle.Paragraph : TextInputStyle.Short)
 
-            return [modal, TextInput]
+            return [modal, textInput]
         },
 
         formBody: function (member_infos, member_id) {
@@ -173,7 +172,6 @@ export default {
     },
 
     ticket: {
-
         closeButton: function () {
             return new ActionRowBuilder()
                 .addComponents(
@@ -226,8 +224,8 @@ export default {
 
 function IdentifierGenerator() {
     return "xxxxxx".replace(/[xy]/g, (c) => {
-        const r = (Math.random() * 16) | 0;
-        const v = c == "x" ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-    });
+        const r = (Math.random() * 16) | 0
+        const v = c == "x" ? r : (r & 0x3) | 0x8
+        return v.toString(16)
+    })
 }

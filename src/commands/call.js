@@ -1,23 +1,21 @@
-import { ActionRowBuilder, ButtonBuilder, EmbedBuilder } from "@discordjs/builders";
-import { ButtonStyle, PermissionFlagsBits, MessageFlags } from "discord.js";
-import config from "../config.js";
-import { commands } from "../client.js";
+import { ActionRowBuilder, ButtonBuilder, EmbedBuilder } from "@discordjs/builders"
+import { ButtonStyle, PermissionFlagsBits, MessageFlags } from "discord.js"
+import config from "../config.js"
+import { commands } from "../client.js"
 
 commands['call'] = async function (interaction) {
-    let cargo_perm = config.atendimento.staff
-
-    if (!interaction.member.roles.cache.has(cargo_perm)) {
+    const staffRoleRequired = config.atendimento.staff
+    if (!interaction.member.roles.cache.has(staffRoleRequired)) {
         return interaction.reply({
             embeds: [
                 new EmbedBuilder()
-                    .setDescription(`\\❌ **| Você precisa ter o cargo <@&${cargo_perm}> para utilizar este comando.**`)
+                    .setDescription(`\\❌ **| Você precisa ter o cargo <@&${staffRoleRequired}> para utilizar este comando.**`)
                     .setColor(0x2f3136)
             ],
             flags: [MessageFlags.Ephemeral]
         })
     }
     else {
-
         if (!interaction.channel.permissionsFor(interaction.client.user).has(PermissionFlagsBits.Administrator))
             return interaction.reply({
                 embeds: [
@@ -30,13 +28,12 @@ commands['call'] = async function (interaction) {
 
         interaction.reply({ content: "Painel enviado!", flags: [MessageFlags.Ephemeral] })
 
-        let embed = new EmbedBuilder()
+        const embed = new EmbedBuilder()
             .setColor(0x2f3136)
             .setTitle(`🔊 SISTEMA DE ATENDIMENTO - ${interaction.guild.name}`)
-            .setDescription(`Para criar uma call de atendimento clique no botão a baixo\n\`\`Obs:\`\` Delete sua call no botão **DELETAR**, assim que desconectar da call.`)
+            .setDescription(`Para criar uma call de atendimento, clique no botão a baixo\n\`\`OBS:\`\` Delete sua call no botão **DELETAR**, assim que desconectar da call.`)
 
-
-        let botao = new ActionRowBuilder()
+        const button = new ActionRowBuilder()
             .addComponents(
                 new ButtonBuilder()
                     .setCustomId("criarcall")
@@ -46,7 +43,8 @@ commands['call'] = async function (interaction) {
                     .setCustomId("deletecall")
                     .setLabel("❌ DELETAR")
                     .setStyle(ButtonStyle.Danger),
-            );
-        return interaction.channel.send({ embeds: [embed], components: [botao] })
+            )
+        
+        return interaction.channel.send({ embeds: [embed], components: [button] })
     }
 }

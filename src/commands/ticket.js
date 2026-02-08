@@ -9,6 +9,7 @@ import {
     EmbedBuilder,
     MessageFlags
 } from 'discord.js'
+
 const bot_table = config.ticket.table
 
 selects['create_ticket'] = async function (interaction) {
@@ -80,7 +81,7 @@ async function createTicket(topic, category, member) {
     channel.send({
         embeds: [
             new EmbedBuilder(topic)
-            .setDescription(`<:1016481398065987766:1038278710702391296> **\`\`TICKET ${IdentifierGenerator().toUpperCase()}\`\`  aberto por ${member.user.username}**\n\n<:1016481401975079093:1038278714678575284> Caso queira **SAIR** desse canal, clique em **<:1018218275802456184:1038279155676090450> Sair do Canal**\n\n<:1016481400607735921:1038278713051205692> Assunto\n \`\`\`${topic}\`\`\``)
+            .setDescription(`<:1016481398065987766:1038278710702391296> **\`\`TICKET ${IdentifierGenerator().toUpperCase()}\`\` aberto por ${member.user.username}**\n\n<:1016481401975079093:1038278714678575284> Caso queira **SAIR** desse canal, clique em **<:1018218275802456184:1038279155676090450> Sair do Canal**\n\n<:1016481400607735921:1038278713051205692> Assunto\n \`\`\`${topic}\`\`\``)
             .setColor(0x2f3136)
         ],
         components: [messages.ticket.closeButton()]
@@ -113,8 +114,8 @@ commands['ticket'] = async function (interaction) {
 
 function IdentifierGenerator() {
     return "xxxxxx".replace(/[xy]/g, (c) => {
-        const r = (Math.random() * 16) | 0;
-        const v = c == "x" ? r : (r & 0x3) | 0x8;
-        return v.toString(16);
-    });
+        const r = (Math.random() * 16) | 0
+        const v = c == "x" ? r : (r & 0x3) | 0x8
+        return v.toString(16)
+    })
 }

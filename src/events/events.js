@@ -7,7 +7,7 @@ const bot_table = config.ticket.table
 
 client.on('guildMemberAdd', async (member) => {
     if (!config.channels.welcome_channel || config.channels.welcome_channel == "") {
-        return;
+        return
     }
 
     const welcome_channel = await client.channels.fetch(config.channels.welcome_channel).catch(() => {})
@@ -21,7 +21,7 @@ client.on('guildMemberAdd', async (member) => {
 
 client.on('guildMemberRemove', async (member) => {
     if (!config.channels.exit_channel || config.channels.exit_channel == "") {
-        return;
+        return
     }
     
     const guild = member.guild
@@ -58,8 +58,7 @@ client.on('messageCreate', async (message) => {
             }
         }
     }
-
-    if (message.channel.id == config.liberation.channelRole) {
+    else if (message.channel.id == config.liberation.channelRole) {
         const value = message.content.split(' ')
 
         if (!value.length < 3) {
@@ -73,8 +72,7 @@ client.on('messageCreate', async (message) => {
             }
         }
     }
-
-    if (message.channel.id == config.liberation.channel) {
+    else if (message.channel.id == config.liberation.channel) {
         const id = Number(message.content.split(' ')[0])
         const member = await message.guild.members.fetch(message.author.id).catch(() => {})
 

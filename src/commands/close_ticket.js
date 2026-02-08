@@ -1,6 +1,5 @@
 import mysql from '../mysql.js'
 import config from '../config.js'
-const bot_table = config.ticket.table
 import {
     Embed,
     TextChannel
@@ -19,6 +18,8 @@ import {
     ButtonStyle,
     MessageFlags
 } from 'discord.js'
+
+const bot_table = config.ticket.table
 
 commands['close_ticket'] = async function (interaction) {
     const channel = interaction.channel
@@ -86,7 +87,7 @@ commands['request_close'] = async function (interaction) {
             color: 0x2f3136,
             fields: [{
                 name: 'Atenção',
-                value: 'Após o ticket ser finalizado o canal será deletado, realmente deseja finalizar o atendimento?'
+                value: 'Após o ticket ser finalizado, o canal será deletado. Realmente deseja finalizar o atendimento?'
             }],
             timestamp: new Date().toISOString(),
             footer: {

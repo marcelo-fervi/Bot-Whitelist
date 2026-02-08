@@ -18,14 +18,12 @@ commands['verification'] = async function (interaction) {
             .setEmoji('🛡️')
             .setStyle(ButtonStyle.Primary),
 
-
             new ButtonBuilder()
             .setCustomId('whyCheck')
             .setLabel('Por que verificar a conta')
             .setEmoji('❓')
             .setStyle(ButtonStyle.Secondary),
-        );
-
+        )
 
     interaction.channel.send({
         components: [buttons],
